@@ -1,29 +1,31 @@
 import { test, expect } from '@playwright/test';
+import { LoginPage } from '../pages/LoginPage';
+import { InventoryPage } from '../pages/InventoryPage';
 
 test('TC-005 - Sort Products A to Z', async ({ page }) => {
-  await page.goto('https://www.saucedemo.com/');
 
-  await page.locator('[data-test="username"]').fill('standard_user');
-  await page.locator('[data-test="password"]').fill('secret_sauce');
-  await page.locator('[data-test="login-button"]').click();
+  const loginPage = new LoginPage(page);
+  const inventoryPage = new InventoryPage(page);
 
-  await page.locator('[data-test="product-sort-container"]').selectOption('az');
+  await loginPage.open();
+  await loginPage.login('standard_user', 'secret_sauce');
 
-  const firstProduct = page.locator('.inventory_item_name').first();
+  await inventoryPage.sort('az');
 
-  await expect(firstProduct).toHaveText('Sauce Labs Backpack');
+  await expect(inventoryPage.firstProduct()).toHaveText('Sauce Labs Backpack');
+
 });
 
 test('TC-006 - Sort Products Z to A', async ({ page }) => {
-  await page.goto('https://www.saucedemo.com/');
 
-  await page.locator('[data-test="username"]').fill('standard_user');
-  await page.locator('[data-test="password"]').fill('secret_sauce');
-  await page.locator('[data-test="login-button"]').click();
+  const loginPage = new LoginPage(page);
+  const inventoryPage = new InventoryPage(page);
 
-  await page.locator('[data-test="product-sort-container"]').selectOption('za');
+  await loginPage.open();
+  await loginPage.login('standard_user', 'secret_sauce');
 
-  const firstProduct = page.locator('.inventory_item_name').first();
+  await inventoryPage.sort('za');
 
-  await expect(firstProduct).toHaveText('Test.allTheThings() T-Shirt (Red)');
+  await expect(inventoryPage.firstProduct()).toHaveText('Test.allTheThings() T-Shirt (Red)');
+
 });

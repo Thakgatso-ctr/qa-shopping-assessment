@@ -1,19 +1,25 @@
 import { test, expect } from '@playwright/test';
+import { LoginPage } from '../pages/LoginPage';
+import { InventoryPage } from '../pages/InventoryPage';
+import { CartPage } from '../pages/CartPage';
 
 test('TC-003 - Add Product to Cart', async ({ page }) => {
-  await page.goto('https://www.saucedemo.com/');
 
-  await page.locator('[data-test="username"]').fill('standard_user');
-  await page.locator('[data-test="password"]').fill('secret_sauce');
-  await page.locator('[data-test="login-button"]').click();
+  const loginPage = new LoginPage(page);
+  const inventoryPage = new InventoryPage(page);
+  const cartPage = new CartPage(page);
 
-  await page.locator('[data-test="add-to-cart-sauce-labs-backpack"]').click();
+  await loginPage.open();
+  await loginPage.login('standard_user', 'secret_sauce');
 
-  await expect(page.locator('[data-test="shopping-cart-badge"]')).toHaveText('1');
+  await inventoryPage.addBackpackToCart();
 
-  await page.locator('[data-test="shopping-cart-link"]').click();
+  await expect(inventoryPage.getCartBadge()).toHaveText('1');
+
+  await inventoryPage.openCart();
 
   await expect(page).toHaveURL(/cart.html/);
 
-  await expect(page.locator('.cart_item')).toHaveCount(1);
+  await expect(cartPage.cartItems()).toHaveCount(1);
+
 });
